@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # 1. FastAPI REST Gateway & Dashboard UI
+  api:
+    build: .
+    container_name: claims_fastapi_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - DATABASE_URL=sqlite:////app/data/claims_platform.db
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    depends_on:
+      - rabbitmq
+
+  # 2. RabbitMQ Message Queue & Management Dashboard
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: claims_rabbitmq
+    ports:
+      - "5672:5672"    # AMQP protocol port
+      - "15672:15672"  # Management Web Dashboard UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  # 3. Asynchronous Claim Feature Processing Worker
+  worker:
+    build: .
+    container_name: claims_rabbitmq_worker
+    command: python src/messaging/rabbitmq_consumer.py
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - DATABASE_URL=sqlite:////app/data/claims_platform.db
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    depends_on:
+      - rabbitmq
+      - api
