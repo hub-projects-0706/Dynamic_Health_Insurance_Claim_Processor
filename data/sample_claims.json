@@ -1,0 +1,58 @@
+{
+  "test_claims": [
+    {
+      "test_name": "Case 1: Legitimate Claim with Active Policy (POL-50112)",
+      "payload": {
+        "claim_id": "CLM-20001",
+        "policy_id": "POL-50112",
+        "patient_id": "PAT-9001",
+        "provider_id": "PRV-201",
+        "policy_status": "ACTIVE",
+        "icd10_diagnosis_code": "J06.9",
+        "cpt_procedure_code": "99213",
+        "code_mismatch_score": 0.05,
+        "claimed_amount": 125.00,
+        "regional_benchmark_cost": 120.00,
+        "provider_sanction_flag": 0,
+        "is_duplicate_claim": 0,
+        "prior_claim_count_30d": 1
+      }
+    },
+    {
+      "test_name": "Case 2: Fraud Flagged / Blacklisted Policy Claim (POL-99988)",
+      "payload": {
+        "claim_id": "CLM-20002",
+        "policy_id": "POL-99988",
+        "patient_id": "PAT-9002",
+        "provider_id": "PRV-202",
+        "policy_status": "FRAUD_FLAGGED",
+        "icd10_diagnosis_code": "J06.9",
+        "cpt_procedure_code": "27447",
+        "code_mismatch_score": 0.88,
+        "claimed_amount": 14500.00,
+        "regional_benchmark_cost": 8500.00,
+        "provider_sanction_flag": 1,
+        "is_duplicate_claim": 1,
+        "prior_claim_count_30d": 5
+      }
+    },
+    {
+      "test_name": "Case 3: Suspended Policy Claim (POL-50341)",
+      "payload": {
+        "claim_id": "CLM-20003",
+        "policy_id": "POL-50341",
+        "patient_id": "PAT-9003",
+        "provider_id": "PRV-203",
+        "policy_status": "SUSPENDED",
+        "icd10_diagnosis_code": "I10",
+        "cpt_procedure_code": "99214",
+        "code_mismatch_score": 0.35,
+        "claimed_amount": 580.00,
+        "regional_benchmark_cost": 185.00,
+        "provider_sanction_flag": 0,
+        "is_duplicate_claim": 0,
+        "prior_claim_count_30d": 4
+      }
+    }
+  ]
+}
