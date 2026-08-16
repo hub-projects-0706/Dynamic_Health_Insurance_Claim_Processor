@@ -1,0 +1,29 @@
+{
+  "test_set_classification_report": {
+    "0": {
+      "precision": 0.46153846153846156,
+      "recall": 0.8076923076923077,
+      "f1-score": 0.5874125874125874,
+      "support": 52.0
+    },
+    "1": {
+      "precision": 0.908256880733945,
+      "recall": 0.668918918918919,
+      "f1-score": 0.7704280155642024,
+      "support": 148.0
+    },
+    "accuracy": 0.705,
+    "macro avg": {
+      "precision": 0.6848976711362033,
+      "recall": 0.7383056133056134,
+      "f1-score": 0.6789203014883949,
+      "support": 200.0
+    },
+    "weighted avg": {
+      "precision": 0.7921100917431193,
+      "recall": 0.705,
+      "f1-score": 0.7228440042447825,
+      "support": 200.0
+    }
+  }
+}
