@@ -1,0 +1,79 @@
+services:
+
+  # ──────────────────────────────────────────
+  # Infrastructure
+  # ──────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: claims_postgres_task1
+    environment:
+      POSTGRES_DB: claims_db
+      POSTGRES_USER: claims_user
+      POSTGRES_PASSWORD: claims_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_task1:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U claims_user -d claims_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: claims_rabbitmq_task1
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────────
+  # Backend – Python (FastAPI + scikit-learn)
+  # ──────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: claims_backend_task1
+    environment:
+      DB_URL: postgresql://claims_user:claims_password@postgres:5432/claims_db
+      DB_USER: claims_user
+      DB_PASS: claims_password
+      # RabbitMQ
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  # ──────────────────────────────────────────
+  # Frontend – React + Vite (served by Nginx)
+  # ──────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: claims_frontend_task1
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: on-failure
+
+volumes:
+  postgres_data_task1:
